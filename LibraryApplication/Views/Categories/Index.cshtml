@@ -1,0 +1,107 @@
+﻿
+@model IEnumerable<Category>
+
+@{
+    ViewData["Title"] = "Category";
+}
+
+<h2>
+    <i class="bi bi-book"></i>
+    Categories
+</h2>
+
+<hr />
+
+<a class="btn btn-primary" asp-action="Create">
+    <i class="bi bi-plus"></i>Add Category
+</a>
+
+<div class="mt-4">
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle"></i>
+            No Categories found!
+        </div>
+    }
+    else
+    {
+        <div class="row col-11">
+            <div class="col-11">
+                    <table class="table" width="100%">
+                        <thead>
+                            <tr>
+                                <th >Name</th>
+                                <th width="110px"></th>
+                                <th width="130px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                
+            @foreach (var Category in Model)
+            {
+                            <tr class="col-12">
+                                <td>@Category.Name</td>
+                                <td><a asp-action="Edit" asp-route-id="@Category.Id" class="btn btn-outline-primary">
+                                                <i class="bi bi-pencil"></i>
+                                                Edit
+                                            </a>
+                                            </td>
+                                <td><a href="javascript:;" class="btn btn-danger js-delete" data-id="@Category.Id">
+                                                <i class="bi bi-trash"></i>
+                                                Delete
+                                            </a></td>
+                            </tr>
+                        
+            }
+            </tbody>
+                    </table>
+                    
+                </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.js-delete').on('click', function () {
+                var btn = $(this);
+
+                bootbox.confirm({
+                    message: "Are you sure that you need to delete this Category?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-outline-secondary'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: '/Categories/delete/' + btn.data('id'),
+                                success: function () {
+                                    var CategoryContainer = btn.parents('.col-12');
+                                    CategoryContainer.addClass('animate__animated animate__zoomOut');
+
+                                    setTimeout(function () {
+                                        CategoryContainer.remove();
+                                    }, 1000);
+
+                                    toastr.success('Category deleted');
+                                },
+                                error: function () {
+                                    toastr.error('Something went wrong!');
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

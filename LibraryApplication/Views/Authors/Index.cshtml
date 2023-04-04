@@ -1,0 +1,111 @@
+﻿
+@model IEnumerable<Author>
+
+@{
+    ViewData["Title"] = "Authors";
+}
+
+<h2>
+    <i class="bi bi-person"></i>
+    Authors
+</h2>
+
+<hr />
+
+<a class="btn btn-primary" asp-action="Create">
+    <i class="bi bi-plus"></i>Add Author
+</a>
+
+<div class="mt-4">
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle"></i>
+            No authors found!
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var author in Model)
+            {
+                <div class="col-12">
+                    <div class="card mb-3">
+                        <div class="row no-gutters">
+                            <div class="col-md-10">
+                                <div class="card-body d-flex flex-column justify-content-between h-100">
+                                    <div>
+                                        <h5 class="card-title">@author.Name </h5>
+                                        <p class="card-text text-justify">@(author.Bio.Length > 500 ? $"{author.Bio.Substring(0, 500)}..." : author.Bio)</p>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-text mb-0 mt-2">
+                                        </p>
+                                        <div>
+                                            <a asp-action="Details" asp-route-id="@author.Id" class="btn btn-outline-secondary" asp-controller="Authors">
+                                                <i class="bi bi-person"></i>
+                                                Details
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@author.Id" class="btn btn-outline-primary" asp-controller="Authors">
+                                                <i class="bi bi-pencil"></i>
+                                                Edit
+                                            </a>
+                                            <a href="javascript:;" class="btn btn-danger js-delete" data-id="@author.Id">
+                                                <i class="bi bi-trash"></i>
+                                                Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.js-delete').on('click', function () {
+                var btn = $(this);
+
+                bootbox.confirm({
+                    message: "Are you sure that you need to delete this author?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-outline-secondary'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: '/authors/delete/' + btn.data('id'),
+                                success: function () {
+                                    var authorContainer = btn.parents('.col-12');
+                                    authorContainer.addClass('animate__animated animate__zoomOut');
+
+                                    setTimeout(function () {
+                                        authorContainer.remove();
+                                    }, 1000);
+
+                                    toastr.success('Author deleted');
+                                },
+                                error: function () {
+                                    toastr.error('Something went wrong!');
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

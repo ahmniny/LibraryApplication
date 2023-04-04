@@ -1,0 +1,126 @@
+﻿@model BookViewModel
+
+@{
+    ViewData["Title"] = "Book Form";
+}
+
+<h2>@(Model.Id > 0 ? "Edit" : "Create") Book</h2>
+
+<hr />
+
+<section class="row justify-content-between">
+    <div class="col-md-4">
+        <form method="POST" asp-action="@(Model.Id > 0 ? "Edit" : "Create")" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label class="text-muted" asp-for="Title"></label>
+                <input type="text" class="form-control" asp-for="Title" maxlength="250" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="text-muted" asp-for="AuthorId"></label>
+                <select class="form-control" asp-for="AuthorId" asp-items="@(new SelectList(Model.Authors, "Id", "Name"))">
+                    <option></option>
+                </select>
+                <span asp-validation-for="AuthorId" class="text-danger"></span>
+            </div>
+             <div class="form-group">
+                <label class="text-muted" asp-for="MainCategoryId"></label>
+                <select class="form-control" asp-for="MainCategoryId" asp-items="@(new SelectList(Model.MainCategories, "Id", "Name"))">
+                    <option></option>
+                </select>
+                <span asp-validation-for="MainCategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="text-muted" asp-for="CategoryId"></label>
+                <select class="form-control" asp-for="CategoryId" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+                    <option></option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group w-50">
+                <label class="text-muted" asp-for="Year"></label>
+                <input type="number" class="form-control" asp-for="Year" value="@(Model.Year > 0 ? Model.Year : string.Empty)" />
+                <span asp-validation-for="Year" class="text-danger"></span>
+            </div>
+            @*<div class="form-group w-50">
+                <label class="text-muted" asp-for="Rate"></label>
+                <input type="number" class="form-control" asp-for="Rate" value="@(Model.Rate > 0 ? Model.Rate : string.Empty)" />
+                <span asp-validation-for="Rate" class="text-danger"></span>
+            </div>*@
+            <div class="form-group">
+                <label class="text-muted" asp-for="Description"></label>
+                <textarea class="form-control" asp-for="Description" maxlength="1000" rows="4"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" asp-for="Cover" accept=".png, .jpg" />
+                <label class="custom-file-label" asp-for="Cover"></label>
+                <span asp-validation-for="Cover" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary mt-4">
+                <i class="bi bi-check"></i>
+                Save
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary mt-4">
+                <i class="bi bi-x"></i>
+                Cancel
+            </a>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <div id="Cover-container" class="@(Model.Id > 0 ? string.Empty : "d-none")">
+            <img src="@(Model.Id > 0 ? $"data:image/*;base64,{Convert.ToBase64String(Model.Cover)}" : string.Empty)" alt="Cover" class="img-thumbnail" />
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        $(document).ready(function () {
+            $('#Cover').on('change', function () {
+                var selectedFile = $(this).val().split('\\').pop();
+                $(this).siblings('label').text(selectedFile);
+
+                var CoverContainer = $('#Cover-container');
+                var image = window.URL.createObjectURL(this.files[0]);
+
+                CoverContainer.removeClass('d-none');
+                CoverContainer.find('img').attr('src', image);
+            });
+
+            $('#Year').datepicker({
+                format: 'yyyy',
+                viewMode: 'years',
+                minViewMode: 'years',
+                autoclose: true,
+                //startDate: new Date('1000-01-01'),
+                endDate: new Date()
+            });
+
+            //,,
+            $("#MainCategoryId").on('change',function(){
+                                    var id= $(this).val();
+                                    var catList= $("#CategoryId");
+                                    catList.empty();
+                                    if(id!==''){
+                                    $.ajax({
+                                            url:'/Books/GetCategories?mainCategoryId='+id,
+                                            success: function(categories){
+                                                console.log('scc');
+                                                console.log('cats '+categories);
+                                                $.each(categories , function(i,cat){
+                                                   catList.append($("<option></option>").attr('value',cat.id).text(cat.name))
+                                                });
+                                            },
+                                            error: function(){
+                                                alert("error");
+                                            }
+                                     });
+                                     }
+             });
+        });
+
+    </script>
+ }
