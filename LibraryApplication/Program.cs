@@ -1,11 +1,18 @@
 using LibraryApplication.Models;
 using Microsoft.EntityFrameworkCore;
+using NToastNotify;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddMvc().AddNToastNotifyToastr(new NToastNotify.ToastrOptions()
+{
+    ProgressBar = true,
+    PreventDuplicates = true,   
+    PositionClass=ToastPositions.TopRight,
+    CloseButton=true
+}) ;
 // Add services to the container.
 
-builder.Services.AddCors();
+//builder.Services.AddCors();
 
 string connectionString = builder
     .Configuration

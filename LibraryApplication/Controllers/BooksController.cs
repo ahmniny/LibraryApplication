@@ -2,22 +2,21 @@
 using LibraryApplication.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-//using NToastNotify;
+using NToastNotify;
 
 namespace LibraryApplication.Controllers
 {
     public class BooksController : Controller
     {
         private readonly AppDbContext _context;
-        //private readonly IToastNotification _toastNotification;
+        private readonly IToastNotification _toastNotification;
         private new List<string> _allowedExtenstions = new List<string> { ".jpg", ".png" };
         private long _maxAllowedCoverSize = 1048576;
-        
-        //public BooksController(AppDbContext context, IToastNotification toastNotification)
-        public BooksController(AppDbContext context)
+
+        public BooksController(AppDbContext context, IToastNotification toastNotification)
         {
             _context = context;
-            //_toastNotification = toastNotification;
+            _toastNotification = toastNotification;
         }
         public async Task<IActionResult> Index()
         {
@@ -102,7 +101,7 @@ namespace LibraryApplication.Controllers
             _context.Books.Add(book);
             _context.SaveChanges();
 
-            //_toastNotification.AddSuccessToastMessage("Book created successfully");
+            _toastNotification.AddSuccessToastMessage("Book created successfully");
             return RedirectToAction(nameof(Index));
         }
 
@@ -193,7 +192,7 @@ namespace LibraryApplication.Controllers
 
             _context.SaveChanges();
 
-            //_toastNotification.AddSuccessToastMessage("Book updated successfully");
+            _toastNotification.AddSuccessToastMessage("Book updated successfully");
             return RedirectToAction(nameof(Index));
         }
 

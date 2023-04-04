@@ -2,20 +2,19 @@
 using LibraryApplication.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-//using NToastNotify;
+using NToastNotify;
 
 namespace LibraryApplication.Controllers
 {
     public class AuthorsController : Controller
     {
         private readonly AppDbContext _context;
-        //private readonly IToastNotification _toastNotification;
+        private readonly IToastNotification _toastNotification;
 
-        //public AuthorsController(AppDbContext context, IToastNotification toastNotification)
-        public AuthorsController(AppDbContext context)
+        public AuthorsController(AppDbContext context, IToastNotification toastNotification)
         {
             _context = context;
-            //_toastNotification = toastNotification;
+            _toastNotification = toastNotification;
         }
 
         public async Task<IActionResult> Index()
@@ -48,7 +47,7 @@ namespace LibraryApplication.Controllers
             _context.Authors.Add(author);
             _context.SaveChanges();
 
-            //_toastNotification.AddSuccessToastMessage("Author created successfully");
+            _toastNotification.AddSuccessToastMessage("Author created successfully");
             return RedirectToAction(nameof(Index));
         }
 
@@ -90,7 +89,7 @@ namespace LibraryApplication.Controllers
             author.Bio = model.Bio;
             _context.SaveChanges();
 
-            //_toastNotification.AddSuccessToastMessage("Author updated successfully");
+            _toastNotification.AddSuccessToastMessage("Author updated successfully");
             return RedirectToAction(nameof(Index));
         }
 

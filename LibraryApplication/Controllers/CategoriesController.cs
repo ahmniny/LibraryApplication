@@ -2,20 +2,19 @@
 using LibraryApplication.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-//using NToastNotify;
+using NToastNotify;
 
 namespace LibraryApplication.Controllers
 {
     public class CategoriesController : Controller
     {
         private readonly AppDbContext _context;
-        //private readonly IToastNotification _toastNotification;
+        private readonly IToastNotification _toastNotification;
 
-        //public CategorysController(AppDbContext context, IToastNotification toastNotification)
-        public CategoriesController(AppDbContext context)
+        public CategoriesController(AppDbContext context, IToastNotification toastNotification)
         {
             _context = context;
-            //_toastNotification = toastNotification;
+            _toastNotification = toastNotification;
         }
 
         public async Task<IActionResult> Index()
@@ -47,7 +46,7 @@ namespace LibraryApplication.Controllers
             _context.Categories.Add(category);
             _context.SaveChanges();
 
-            //_toastNotification.AddSuccessToastMessage("Category created successfully");
+            _toastNotification.AddSuccessToastMessage("Category created successfully");
             return RedirectToAction(nameof(Index));
         }
 
@@ -87,7 +86,7 @@ namespace LibraryApplication.Controllers
             category.Name = model.Name;
             _context.SaveChanges();
 
-            //_toastNotification.AddSuccessToastMessage("Category updated successfully");
+            _toastNotification.AddSuccessToastMessage("Category updated successfully");
             return RedirectToAction(nameof(Index));
         }
 
